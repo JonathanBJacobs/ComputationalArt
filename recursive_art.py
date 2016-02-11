@@ -1,7 +1,11 @@
-""" TODO: Put your header comment here """
+""" Random art generator. Software Design Spring 2016
+
+    @author: Jonathan B Jacobs
+"""
 
 import random
 from PIL import Image
+import math
 
 
 def build_random_function(min_depth, max_depth):
@@ -15,12 +19,28 @@ def build_random_function(min_depth, max_depth):
                  (see assignment writeup for details on the representation of
                  these functions)
     """
-    # TODO: implement this
-    pass
+    functions = {1: "prod", 2: "avg", 3: "cos_pi", 4: "sin_pi",
+                 5: "arctan", 6: "step", 7: "x", 8: "y"}
+
+    depth = random.randint(min_depth, max_depth)
+
+    funcNum = random.randint(1, 4)
+
+    if depth != 0:
+        if funcNum in [1, 2]:
+            return [functions[funcNum],
+                    build_random_function(depth-1, depth-1),
+                    build_random_function(depth-1, depth-1)]
+        else:
+            return [functions[funcNum],
+                    build_random_function(depth-1, depth-1)]
+    else:
+        return functions[random.randint(7, 8)]
 
 
 def evaluate_random_function(f, x, y):
-    """ Evaluate the random function f with inputs x,y
+
+    """ Evaluate the random function f with input x
         Representation of the function f is defined in the assignment writeup
 
         f: the function to evaluate
@@ -33,8 +53,35 @@ def evaluate_random_function(f, x, y):
         >>> evaluate_random_function(["y"],0.1,0.02)
         0.02
     """
-    # TODO: implement this
-    pass
+    functions = {1: "prod", 2: "avg", 3: "cos_pi", 4: "sin_pi",
+                 5: "arctan", 6: "step", 7: "x", 8: "y"}
+    if len(f) == 3:
+        eval1 = evaluate_random_function(f[1], x, y)
+        eval2 = evaluate_random_function(f[2], x, y)
+    elif len(f) == 2:
+        eval1 = evaluate_random_function(f[1], x, y)
+
+    if f[0] == functions[1]:
+        return eval1 * eval2
+    elif f[0] == functions[2]:
+        return 0.5 * (eval1 + eval2)
+    elif f[0] == functions[3]:
+        return math.cos(math.pi * eval1)
+    elif f[0] == functions[4]:
+        return math.sin(math.pi * eval1)
+    elif f[0] == functions[5]:
+        return math.atan(eval1)/(math.pi)/2
+    elif f[0] == functions[6]:
+        if eval1 > 0:
+            return 1
+        elif eval1 == 0:
+            return 0
+        elif eval1 < 0:
+            return -1
+    elif f[0] == functions[7]:
+        return x
+    elif f[0] == functions[8]:
+        return y
 
 
 def remap_interval(val,
@@ -64,8 +111,11 @@ def remap_interval(val,
         >>> remap_interval(5, 4, 6, 1, 2)
         1.5
     """
-    # TODO: implement this
-    pass
+    inputRange = 1.0*(input_interval_end - input_interval_start)
+    outputRange = output_interval_end - output_interval_start
+    val -= input_interval_start
+
+    return val*outputRange/inputRange + output_interval_start
 
 
 def color_map(val):
@@ -116,15 +166,17 @@ def generate_art(filename, x_size=350, y_size=350):
         x_size, y_size: optional args to set image dimensions (default: 350)
     """
     # Functions for red, green, and blue channels - where the magic happens!
-    red_function = ["x"]
-    green_function = ["y"]
-    blue_function = ["x"]
+    red_function = build_random_function(10, 20)
+    green_function = build_random_function(10, 20)
+    blue_function = build_random_function(10, 20)
 
     # Create image and loop over all pixels
     im = Image.new("RGB", (x_size, y_size))
     pixels = im.load()
     for i in range(x_size):
         for j in range(y_size):
+            print "i: " + str(i)
+            print "j: " + str(j)
             x = remap_interval(i, 0, x_size, -1, 1)
             y = remap_interval(j, 0, y_size, -1, 1)
             pixels[i, j] = (
@@ -139,12 +191,10 @@ def generate_art(filename, x_size=350, y_size=350):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
     #       implement remap_interval and evaluate_random_function
-    # generate_art("myart.png")
-
+    generate_art("myart.png")
     # Test that PIL is installed correctly
     # TODO: Comment or remove this function call after testing PIL install
-    test_image("noise.png")
+    # test_image("noise.png")
