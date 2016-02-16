@@ -23,7 +23,7 @@ def build_random_function(min_depth, max_depth):
                  5: "arctan", 6: "step", 7: "x", 8: "y"}
 
     depth = random.randint(min_depth, max_depth)
-    funcNum = random.randint(1, 4)
+    funcNum = random.randint(1, 6)
 
     if depth != 0:
         if funcNum in [1, 2]:
@@ -165,9 +165,9 @@ def generate_art(filename, x_size=350, y_size=350):
         x_size, y_size: optional args to set image dimensions (default: 350)
     """
     # Functions for red, green, and blue channels - where the magic happens!
-    red_function = build_random_function(11, 12)
-    green_function = build_random_function(12, 13)
-    blue_function = build_random_function(13, 14)
+    red_function = build_random_function(8, 8)
+    green_function = build_random_function(8, 8)
+    blue_function = build_random_function(8, 8)
 
     # Create image and loop over all pixels
     im = Image.new("RGB", (x_size, y_size))
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
     #       implement remap_interval and evaluate_random_function
-    generate_art("save4.png", 350, 350)
+    generate_art("example5.png", 350, 350)
     # Test that PIL is installed correctly
     # TODO: Comment or remove this function call after testing PIL install
     # test_image("noise.png")
